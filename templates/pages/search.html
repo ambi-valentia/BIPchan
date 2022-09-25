@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block head_title %}
+| Search
+{% endblock head_title%}
+
+
+{% block content %}
+
+<div class='row text-center'>
+    <div class='col'>
+        <h1>Recent posts</h1>
+    </div>
+</div>
+
+{% if request.user.is_authenticated %}
+
+{% include "components/post-create.html" %}
+
+{% endif %}
+
+<div class='row' id='messages'>
+    Loading...
+</div>
+
+{% include "scripts/scripts.html" %}
+
+{% if request.user.is_authenticated %}
+<script>
+    var url_addition = "?search={{search_query}}"
+    const messageCreateFormEl = document.getElementById("message-create-form")
+    messageCreateFormEl.addEventListener("submit", handleMessageCreateFormDidSumbit)
+    const messagesContainerElement = document.getElementById("messages")
+    loadMessages(messagesContainerElement, null)
+</script>
+{% else %}
+<script>
+    var url_addition = null
+    const messagesContainerElement = document.getElementById("messages")
+    loadMessages(messagesContainerElement, null)
+</script>
+{% endif %}
+{% endblock content %}

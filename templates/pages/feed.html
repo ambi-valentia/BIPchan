@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block head_title %}
+| Feed
+{% endblock head_title%}
+
+
+{% block content %}
+
+{% include "components/post-create.html" %}
+
+<div class='row text-center'>
+    <div class='col'>
+        <h1>This is your feed, {{user}}</h1>
+    </div>
+</div>
+
+<div class='row' id='messages'>
+    Loading...
+</div>
+
+{% include "scripts/scripts.html" %}
+
+<script>
+    var url_addition = "feed/"
+    const messageCreateFormEl = document.getElementById("message-create-form")
+    messageCreateFormEl.addEventListener("submit", handleMessageCreateFormDidSumbit)
+    
+    const messagesContainerElement = document.getElementById("messages")
+    loadMessages(messagesContainerElement, null)
+</script>
+{% endblock content %}

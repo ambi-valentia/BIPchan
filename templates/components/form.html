@@ -1,0 +1,6 @@
+<div class='form border'>
+<form method='POST'> {% csrf_token %}
+    {{ form.as_p }}
+    <button type='submit' class='btn btn-block btn-secondary'>{{ btn_label }}</button>
+</form>
+</div>

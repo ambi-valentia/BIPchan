@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block head_title %}
+| Thread | {{thread.name}}
+{% endblock head_title%}
+
+
+{% block content %}
+
+<div class="thread-header border bg-light shadow">
+    <div class='row text-center'>
+        <div class="col-sm">
+            <h1>/{{thread.name}}/</h1>
+        </div>
+        <div class="col-sm">
+            <button id="follow-btn" type='submit' class='btn btn-primary subscr-btn'></button>
+        </div>
+    </div>
+</div>
+
+<div class='row' id='messages'>
+    Loading...
+</div>
+
+{% include "scripts/scripts.html" %}
+
+<script>
+	var url_addition = "?thread={{thread.name}}"
+	const followBtn = document.getElementById("follow-btn")
+	if ("{{is_subscribed}}" === "False") {
+		followBtn.innerText = "SUBSCRIBE"
+	} else {
+		followBtn.innerText= "UNSUBSCRIBE"
+	}
+	
+	followBtn.addEventListener("click", () => {
+      const xhr = new XMLHttpRequest()
+      const responseType = "json"
+      method='POST'
+      url='/api/threads/action/'
+      const data = JSON.stringify({
+          thread_name: "{{thread.name}}",
+          action: followBtn.innerText.toLowerCase()
+      })
+      const csrftoken = getCookie('csrftoken');
+      xhr.responseType = responseType
+      xhr.open(method, url)
+      xhr.setRequestHeader("Content-Type", "application/json")
+      xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest")
+      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+      xhr.setRequestHeader("X-CSRFToken", csrftoken)
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+            if (xhr.response.is_subscribed === false) {
+                followBtn.innerText = "SUBSCRIBE"
+            } else {
+                followBtn.innerText= "UNSUBSCRIBE"
+            }
+        } else 
+            alert("Server error, please try again.")
+        }
+      xhr.send(data)
+    })
+
+    const messagesContainerElement = document.getElementById("messages")
+    loadMessages(messagesContainerElement)
+</script>
+
+{% endblock content %}
