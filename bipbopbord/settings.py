@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +21,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&)u^=6@nd5_0#b#8gey*uduqou@vn3k+hhuco81&wt$*iad2mk'
+#SECRET_KEY = 'django-insecure-&)u^=6@nd5_0#b#8gey*uduqou@vn3k+hhuco81&wt$*iad2mk'
+import os
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&)u^=6@nd5_0#b#8gey*uduqou@vn3k+hhuco81&wt$*iad2mk')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = bool( os.environ.get('DJANGO_DEBUG', True) )
+#DEBUG = False
+#ALLOWED_HOSTS = ['127.0.0.1', 'e851-178-65-138-246.ngrok.io']
+ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = ['127.0.0.1', 'e851-178-65-138-246.ngrok.io']
 LOGIN_URL = "/login"
 
 MAX_MESSAGE_LENGTH = 240
@@ -53,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -140,6 +147,7 @@ STATICFILES_DIRS = [
      os.path.join(BASE_DIR, 'static')
 ]
 
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media') 
 PROTECTED_MEDIA = os.path.join(BASE_DIR, 'protected') 
@@ -163,3 +171,7 @@ REST_FRAMEWORK = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+django_heroku.settings(locals())
