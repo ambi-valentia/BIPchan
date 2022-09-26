@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block head_title %}
+| @{{seacrch_user}}
+{% endblock head_title%}
+
+
+{% block content %}
+
+<div class="thread-header border bg-light shadow">
+    <div class='row text-center'>
+        <div class="col-sm">
+            <img src="/media/cat1.svg" width="350" height="350" alt="">
+        </div>
+        <div class="col-sm">
+            <h1>@{{profile.user.username}}</h1>
+            {% if profile.user.first_name %}
+            <p>Username: {{profile.user.first_name}} {{profile.user.last_name}}</p>
+            {% endif %}
+            {% if profile.bio %}
+            <p>Bio: {{profile.bio}}</p>
+            {% endif %}
+            <p>Followers: {{profile.followers.count}}</p>
+            <p>Following: {{profile.user.following.count}}</p>
+            <p>Subscriptions: {{profile.subscriptions.count}}</p>
+        </div>
+        {% if seacrch_user != user%}
+        <div class="col-sm">
+            <button id="follow-btn" type='submit' class='btn btn-primary flw-btn'></button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class='row text-center'>
+    <div class='col'>
+        <h1>Posts by {{seacrch_user}}</h1>
+    </div>
+</div>
+
+<div class='row' id='messages'>
+    Loading...
+</div>
+
+{% include "scripts/scripts.html" %}
+
+{% if seacrch_user != user%}
+<script>
+    
+	const followBtn = document.getElementById("follow-btn")
+	if ("{{is_following}}" === "False") {
+		followBtn.innerText = "FOLLOW"
+	} else {
+		followBtn.innerText= "UNFOLLOW"
+	}
+	
+	followBtn.addEventListener("click", () => {
+      const xhr = new XMLHttpRequest()
+      const responseType = "json"
+      method='POST'
+      url='/api/profile/{{profile.user.username}}/'
+      const data = JSON.stringify({
+          action: followBtn.innerText.toLowerCase()
+      })
+      const csrftoken = getCookie('csrftoken');
+      xhr.responseType = responseType
+      xhr.open(method, url)
+      xhr.setRequestHeader("Content-Type", "application/json")
+      xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest")
+      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+      xhr.setRequestHeader("X-CSRFToken", csrftoken)
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+            if (xhr.response.is_following === false) {
+                followBtn.innerText = "FOLLOW"
+            } else {
+                followBtn.innerText= "UNFOLLOW"
+            }
+        } else 
+            alert("Server error, please try again.")
+        }
+      xhr.send(data)
+    })
+</script>
+{% endif %}
+<script>
+	var url_addition = "?user={{profile.user.username}}"
+    const messagesContainerElement = document.getElementById("messages")
+    loadMessages(messagesContainerElement)
+</script>
+
+{% endblock content %}
